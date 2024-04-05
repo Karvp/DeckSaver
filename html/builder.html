@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Deck Builder</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+    <link rel="stylesheet" href="/styles/builder.css" />
+    <link rel="stylesheet" href="/styles/builder2.css" />
+    <link rel="stylesheet" href="/styles/builder3.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="/scripts/chosen.jquery.min.js"></script>
+    <link rel="stylesheet" href="/styles/chosen.min.css" />
+    <link rel="stylesheet" href="/styles/chosen-bootstrap.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
+        integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/scripts/hash.js"></script>
+    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/builder.js"></script>
+    <style type="text/css">
+        .card_img {
+            width: 70%;
+        }
+
+        .modal-dialog {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 766px) {
+            .modal-dialog {
+                flex-direction: row;
+            }
+        }
+        
+        .unselectable {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            background: #1D1E22 !important;
+            color: #eee !important;
+        }
+
+        .deck-tool .btn-outline-secondary {
+            color: #fee !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="deck-tool">
+        <main>
+            <div class="b-overlay-wrap position-relative">
+                <div class="deck-tool__body">
+                    <div class="deck-tool__body__primary">
+                        <!-- Tool bar -->
+                        <div class="toolbar form-group">
+                            <div role="group" class="toolbar__items unselectable">
+                                <div class="dropdown btn-group">
+                                    <button aria-expanded="false" type="button" class="btn dropdown-toggle btn-primary"
+                                        data-bs-toggle="dropdown"><span aria-hidden="true"
+                                            class="fas fas-in-button fa-file-import"></span> Import </button>
+                                    <ul class="dropdown-menu">
+                                        <li><button type="button" class="dropdown-item" id="fromYdk">
+                                            <span aria-hidden="true" class="fas fa-file fas-in-button"></span> From .ydk Deck File
+                                            </button></li>
+                                        <input type="file" id="fileUpload" accept=".ydk" style="position: fixed; top: -100em" />
+                                    </ul>
+                                </div>
+                                <div class="dropdown btn-group"><button id="Exports" aria-expanded="false" type="button" class="btn dropdown-toggle btn-primary disabled"
+                                        data-bs-toggle="dropdown"><span aria-hidden="true"
+                                            class="fas fas-in-button fa-file-export"></span> Export
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><button type="button"
+                                                class="dropdown-item" id="toYdk"><span aria-hidden="true"
+                                                    class="fas fa-file fas-in-button"></span> To .ydk Deck File
+                                            </button></li>
+                                        <li><button type="button"
+                                                class="dropdown-item" id="toWord"><span aria-hidden="true"
+                                                    class="fas fa-file fas-in-button"></span> To .docx File
+                                            </button></li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown btn-group"><button id="Edits" aria-expanded="false"
+                                        type="button" class="btn dropdown-toggle btn-primary disabled"
+                                        data-bs-toggle="dropdown"><span aria-hidden="true"
+                                            class="fas fas-in-button fa-edit"></span> Edit </button>
+                                    <ul class="dropdown-menu">
+                                        <li><button type="button"
+                                                class="dropdown-item" id="sort_btn"><span aria-hidden="true"
+                                                    class="fas fa-sort fas-in-button"></span> Sort </button></li>
+                                        <li><button type="button"
+                                                class="dropdown-item" id="clear_btn"><span aria-hidden="true"
+                                                    class="fas fa-trash fas-in-button"></span> Clear </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown btn-group"><button aria-expanded="false"
+                                        type="button" class="btn dropdown-toggle btn-primary" disabled
+                                        data-bs-toggle="dropdown"><span aria-hidden="true"
+                                            class="fas fas-in-button fa-magic"></span> Tools </button>
+                                    <ul class="dropdown-menu">
+                                        <li><button type="button" disabled
+                                                class="dropdown-item"><span aria-hidden="true"
+                                                    class="fas fa-hand-sparkles fas-in-button"></span> Simulate
+                                                Start-Hand </button></li>
+                                        <li>
+                                            <hr role="separator" aria-orientation="horizontal" class="dropdown-divider">
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- Deck -->
+                        <div id="deckToolDeck" class="deck">
+                            <section class="deck-part deck-part--main">
+                                <header class="deck-part__header">
+                                    <div class="deck-part__details">
+                                        <h2 class="deck-part__name h5"> Main Deck </h2><small class="deck-part__stats">
+                                            <div id="main_count" style="display: inline;">0</div> Cards
+                                        </small>
+                                    </div>
+                                </header>
+                                <div data-deck-part-area="main" id="main_deck" class="deck-part__content"></div>
+                            </section>
+                            <section class="deck-part deck-part--extra">
+                                <header class="deck-part__header">
+                                    <div class="deck-part__details">
+                                        <h2 class="deck-part__name h5"> Extra Deck </h2><small class="deck-part__stats">
+                                            <div id="extra_count" style="display: inline;">0</div> Cards
+                                        </small>
+                                    </div>
+                                </header>
+                                <div data-deck-part-area="extra" id="extra_deck" class="deck-part__content"></div>
+                            </section>
+                        </div>
+                    </div>
+                    <div class="deck-tool__body__secondary">
+                        <div class="builder">
+                            <form id="search" class="input-group mb-3">
+                                <input type="text" id="search_box" class="form-control" placeholder="Search card name...">
+                                <button class="btn btn-outline-secondary" type="button" id="search_btn">
+                                    <span class="spinner-grow spinner-grow-sm" aria-hidden="true"
+                                        style="display: none;"></span>
+                                    <span aria-hidden="true" class="fas fas-in-button fa-search"></span>Search</button>
+                            </form>
+                            <div class="builder__details"><small style="display: none;" class="builder__count"
+                                    id="result_count"> Result: 0 of 0 Cards
+                                </small><button class="btn btn-primary collapsed" aria-expanded="false"
+                                    aria-controls="filterSidebar" style="overflow-anchor: none;" type="button"
+                                    data-bs-toggle="modal" data-bs-target="#CardFilter"><span aria-hidden="true"
+                                        class="fas fas-in-button fa-filter"></span> Filter Cards
+                                </button>
+                            </div>
+                            <form class="form-group sorting-options unselectable"><label class="sorting-options__label w-50"> Sort by
+                                </label>
+                                <select id="sort" class="form-select" aria-label="SortType">
+                                    <option value="name">Name</option>
+                                    <option value="level">Level/Rank</option>
+                                    <option value="atk">ATK</option>
+                                    <option value="def">DEF</option>
+                                    <option value="pscale">Pendulum Scale</option>
+                                    <option value="link-level">Link Rating</option>
+                                    <option value="date">Release Date</option>
+                                </select>
+                                <select id="sort_order" class="form-select" aria-label="SortOrder" disabled>
+                                    <option value="asc" selected>Asc</option>
+                                    <option value="desc">Desc</option>
+                                </select>
+                            </form>
+                            <div class="builder_matches">
+                                <ol id="searchResult" class="builder-matches__list"></ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+<!-- Filter Modal -->
+<div class="modal fade unselectable" id="CardFilter" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Select Filters</h5>
+                <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Attributes</h6>
+                <select data-placeholder="Dark, Light..." multiple class="select" tabindex="1" id="attr">
+                    <option value="12">Dark</option>
+                    <option value="11">Light</option>
+                    <option value="15">Earth</option>
+                    <option value="13">Water</option>
+                    <option value="14">Fire</option>
+                    <option value="16">Wind</option>
+                    <option value="17">Divine</option>
+                </select>
+                <hr>
+                <h6>Icon</h6>
+                <select data-placeholder="Equip, Field..." multiple class="select" tabindex="1" id="icon">
+                    <option value="23">Equip</option>
+                    <option value="22">Field</option>
+                    <option value="25">Quick Play</option>
+                    <option value="26">Ritual</option>
+                    <option value="24">Continuous</option>
+                    <option value="21">Counter</option>
+                    <option value="20">Normal</option>
+                </select>
+                <hr>
+                <h6>Monster Type</h6>
+                <select data-placeholder="Fiend, Dragon..." multiple class="select" tabindex="1" id="montype">
+                    <option value="18">Spellcaster</option>
+                    <option value="1">Dragon</option>
+                    <option value="2">Zombie</option>
+                    <option value="15">Warrior</option>
+                    <option value="12">Beast-Warrior</option>
+                    <option value="11">Beast</option>
+                    <option value="16">Winged Beast</option>
+                    <option value="3">Fiend</option>
+                    <option value="17">Fairy</option>
+                    <option value="10">Insect</option>
+                    <option value="9">Dinosaur</option>
+                    <option value="20">Reptile</option>
+                    <option value="8">Fish</option>
+                    <option value="5">Sea Serpent</option>
+                    <option value="14">Aqua</option>
+                    <option value="4">Pyro</option>
+                    <option value="19">Thunder</option>
+                    <option value="6">Rock</option>
+                    <option value="13">Plant</option>
+                    <option value="7">Machine</option>
+                    <option value="21">Psychic</option>
+                    <option value="22">Divine-Beast</option>
+                    <option value="26">Wyrm</option>
+                    <option value="27">Cyberse</option>
+                    <option value="34">Illusion Type</option>
+                </select>
+                <hr>
+                <h6>Card Type</h6>
+                <select data-placeholder="Normal, Effect..." multiple class="select" tabindex="1" id="cardtype">
+                    <option value="0">Normal</option>
+                    <option value="1">Effect</option>
+                    <option value="3">Ritual</option>
+                    <option value="2">Fusion</option>
+                    <option value="9">Synchro</option>
+                    <option value="10">Xyz</option>
+                    <option value="4">Toon</option>
+                    <option value="5">Spirit</option>
+                    <option value="6">Union</option>
+                    <option value="7">Gemini</option>
+                    <option value="8">Tuner</option>
+                    <option value="14">Flip</option>
+                    <option value="15">Pendulum</option>
+                    <option value="17">Link</option>
+                </select>
+                <div class="form-check form-check-inline" style="margin-top: 1%;">
+                    <input class="form-check-input" type="radio" name="cardtype_nor" value="and" id="ct1">
+                    <label class="form-check-label" for="ct1">and</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="cardtype_nor" checked value="or" id="ct2">
+                    <label class="form-check-label" for="ct2">or</label>
+                </div>
+                <hr>
+                <h6>Level/Rank</h6>
+                <select data-placeholder="1, 2..." multiple class="select" tabindex="1" id="level">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                </select>
+                <hr>
+                <h6>Pendulum Scale</h6>
+                <select data-placeholder="1, 2..." multiple class="select" tabindex="1" id="pscale">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                </select>
+                <hr>
+                <h6>Link Level</h6>
+                <select data-placeholder="1, 2..." multiple class="select" tabindex="1" id="link-level">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+                <hr>
+                <h6>Link Arrow</h6>
+                <select data-placeholder="Top, Left..." multiple class="select" tabindex="1" id="link-arrow">
+                    <option value="1">Bottom Left</option>
+                    <option value="2">Bottom</option>
+                    <option value="3">Bottom Right</option>
+                    <option value="4">Left</option>
+                    <option value="6">Right</option>
+                    <option value="7">Top Left</option>
+                    <option value="8">Top</option>
+                    <option value="9">Top Right</option>
+                </select>
+                <div class="form-check form-check-inline" style="margin-top: 1%;">
+                    <input class="form-check-input" type="radio" name="linkarrow_nor" value="and" id="la1">
+                    <label class="form-check-label" for="la1">and</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="linkarrow_nor" checked value="or" id="la2">
+                    <label class="form-check-label" for="la2">or</label>
+                </div>
+                <hr>
+                <h6>ATK</h6>
+                From:
+                <input id="atkfrom" type="number" min="0" />
+                To:
+                <input id="atkto" type="number" min="0" />
+                <hr>
+                <h6>DEF</h6>
+                From:
+                <input id="deffrom" type="number" min="0" />
+                To:
+                <input id="defto" type="number" min="0" />
+                <hr>
+                <h6>Initial Release Date</h6>
+                <div class="sab">
+                    <div class="starttime"> <label for="sd">Start Date</label>
+                        <div id="sd"> <span class="dd select_df"> <select id="DStart"> </select> </span> <span
+                                class="s_1">/</span> <span class="mm select_df"> <select id="MStart"> </select> </span>
+                            <span class="s_2">/</span> <span class="yyyy select_df"> <select id="YStart"> </select>
+                            </span> </div>
+                    </div>
+                    <span> ～ </span>
+                    <div class="endtime"> <label for="ed">End Date</label>
+                        <div id="ed"> <span class="dd select_df"> <select id="DEnd"> </select> </span> <span
+                                class="s_1">/</span> <span class="mm select_df"> <select id="MEnd"> </select> </span>
+                            <span class="s_2">/</span> <span class="yyyy select_df"> <select id="YEnd"> </select>
+                            </span> </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Download Modal -->
+<div class="modal fade unselectable" id="LoadingDialog" tabindex="-1" role="dialog" aria-hidden="true">
+    <center>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="LoadingTitle">Please Wait...</h5>
+                    <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="loadingMsg" class="modal-body">
+                    <h2 class="fs-5">Converting in process...</h2>
+                    <p>Do not exit the screen, we will notice you when finished
+                    <div class="spinner-grow" role="status"></div>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </center>
+</div>
+<!-- Card Description Modal -->
+<div class="modal fade" id="CardDesc" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-header unselectable">
+                <h1 class="modal-title fs-5">Card Information</h1>
+                <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container text-center" id="main_desc">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
