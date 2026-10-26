@@ -1,11 +1,7 @@
 {
-  "scripts": {
-    "install": "python3 narflinger.py && sh install.sh",
-    "start": "sh start.sh"
-  },
-  "narflinger": {
-    "basenames": [
-      "zx8afr6kxipp78hpm3r578zlgq2a60zn-python3-3.10.11"
-    ]
-  }
+  "name": "yugioh-decksaver-archive",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local YDK deck preview with an offline Flask demo.",
+  "scripts": {}
 }
